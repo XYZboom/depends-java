@@ -34,9 +34,12 @@ import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.atn.LexerATNSimulator;
 import org.antlr.v4.runtime.atn.ParserATNSimulator;
 import org.antlr.v4.runtime.atn.PredictionContextCache;
+import org.antlr.v4.runtime.tree.ParseTreeListener;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.List;
 
 
 public class JavaFileParser extends FileParser {
@@ -47,25 +50,24 @@ public class JavaFileParser extends FileParser {
 	}
 
 	@Override
-	protected void parseFile(String fileFullPath) throws IOException {
+	protected void parseFile(@NotNull String fileFullPath, @NotNull List<ParseTreeListener> list) throws IOException {
 		CharStream input = CharStreams.fromFileName(fileFullPath);
-        Lexer lexer = new JavaLexer(input);
-        lexer.setInterpreter(new LexerATNSimulator(lexer, lexer.getATN(), lexer.getInterpreter().decisionToDFA, new PredictionContextCache()));
-        CommonTokenStream tokens = new CommonTokenStream(lexer);
-        JavaParser parser = new JavaParser(tokens);
-        ParserATNSimulator interpreter = new ParserATNSimulator(parser, parser.getATN(), parser.getInterpreter().decisionToDFA, new PredictionContextCache());
-        parser.setInterpreter(interpreter);
-        JavaListener bridge = new JavaListener(fileFullPath, entityRepo, bindingResolver);
-	    ParseTreeWalker walker = new ParseTreeWalker();
-	    try {
-	    	walker.walk(bridge, parser.compilationUnit());
+		Lexer lexer = new JavaLexer(input);
+		lexer.setInterpreter(new LexerATNSimulator(lexer, lexer.getATN(), lexer.getInterpreter().decisionToDFA, new PredictionContextCache()));
+		CommonTokenStream tokens = new CommonTokenStream(lexer);
+		JavaParser parser = new JavaParser(tokens);
+		ParserATNSimulator interpreter = new ParserATNSimulator(parser, parser.getATN(), parser.getInterpreter().decisionToDFA, new PredictionContextCache());
+		parser.setInterpreter(interpreter);
+		JavaListener bridge = new JavaListener(fileFullPath, entityRepo, bindingResolver);
+		ParseTreeWalker walker = new ParseTreeWalker();
+		try {
+			walker.walk(bridge, parser.compilationUnit());
 			interpreter.clearDFA();
 
-	    }catch (Exception e) {
-	    	System.err.println("error encountered during parse..." );
-	    	e.printStackTrace();
-	    }
-	    
-    }
-	
+		}catch (Exception e) {
+			System.err.println("error encountered during parse..." );
+			e.printStackTrace();
+		}
+	}
+
 }
