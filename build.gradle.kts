@@ -62,6 +62,7 @@ tasks.generateGrammarSource {
     arguments.addAll(
         arrayOf(
             "-package", "depends.extractor.java",
+            "-visitor"
         )
     )
 }
