@@ -46,6 +46,7 @@ sourceSets {
 }
 
 dependencies {
+    implementation("org.jetbrains:annotations:24.0.1")
     implementation("cn.emergentdesign.se:depends-core:0.9.8-SNAPSHOT")
     implementation("org.codehaus.plexus:plexus-utils:3.5.1")
     antlr("org.antlr:antlr4:4.13.1")
