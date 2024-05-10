@@ -4,36 +4,39 @@ plugins {
     antlr
 }
 
-group = "cn.emergentdesign.se"
-version = "1.0-SNAPSHOT"
+group = "com.github.XYZboom"
+version = "1.0.0-alpha2"
 
 repositories {
     mavenLocal()
-    maven {
-        url = uri("http://47.115.213.131:8080/repository/alex-release/")
-        isAllowInsecureProtocol = true
-    }
     mavenCentral()
+    maven("https://jitpack.io")
 }
 
 publishing {
     repositories {
-        maven {
-            url = uri("http://47.115.213.131:8080/repository/alex-snapshots/")
-            credentials {
-                username = properties["maven-username"].toString()
-                password = properties["maven-password"].toString()
-            }
-            isAllowInsecureProtocol = true
-        }
+        mavenLocal()
     }
     publications {
-        create<MavenPublication>("maven") {
-            groupId = "cn.emergentdesign.se"
+        create<MavenPublication>("depends-java") {
+            groupId = "com.github.XYZboom"
             artifactId = "depends-java"
-            version = "0.9.8-SNAPSHOT"
+            version = "1.0.0-alpha2"
 
             from(components["java"])
+        }
+        create<MavenPublication>("depend-java-source") {
+            groupId = "com.github.XYZboom"
+            artifactId = "depends-java"
+            version = "1.0.0-alpha2"
+
+            // 配置要上传的源码
+            artifact(tasks.register<Jar>("sourcesJar") {
+                from(sourceSets.main.get().allSource)
+                archiveClassifier.set("sources")
+            }) {
+                classifier = "sources"
+            }
         }
     }
 }
@@ -47,12 +50,11 @@ sourceSets {
 
 dependencies {
     implementation("org.jetbrains:annotations:24.0.1")
-    implementation("cn.emergentdesign.se:depends-core:0.9.8-SNAPSHOT")
+    implementation("com.github.XYZboom:depends-core:1.0.0-alpha6")
     implementation("org.codehaus.plexus:plexus-utils:3.5.1")
     antlr("org.antlr:antlr4:4.13.1")
     testImplementation("junit:junit:4.13.2")
-    testImplementation("cn.emergentdesign.se:utils:0.1.1")
-
+    implementation("com.github.multilang-depends:utils:04855aebf3")
 }
 
 tasks.getByName<Test>("test") {
